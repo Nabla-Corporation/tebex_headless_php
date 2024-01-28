@@ -1,13 +1,30 @@
 <?php
+/** @file tebex_headless.php
+ *  @brief Functions to interact with the Tebex Headless API
+ *
+ *  @author Blaise Lebreton
+ */
 
 $webstoreIdent = "";
 
+/** @brief Sets the webstore identifer
+ *  @param "$identifier" The webstore identifier (https://creator.tebex.io/developers/api-keys)
+ *  @return
+ */
 function SetWebstoreIdentifier($identifier) {
   global $webstoreIdent;
 
   $webstoreIdent = $identifier;
 }
 
+/** @brief Helper function to perform requests (internal use only)
+ *  @param "$method" HTTP method (PUT/POST/GET/DELETE/...)
+ *  @param "$route" Route of the Tebex Headless API
+ *  @param "$identifier" Identifier of the route
+ *  @param "$path" Path of the request
+ *  @param "$data" Data passed as post fields
+ *  @return Array decoded from Tebex's API
+ */
 function Request($method, $route, $identifier, $path, $data = array()) {
   $baseUrl = "https://headless.tebex.io";
   $curl = curl_init();
@@ -33,6 +50,12 @@ function Request($method, $route, $identifier, $path, $data = array()) {
   return $response;
 }
 
+/** @brief Get the categories from the webstore
+ *  @param "$includePackages" Set to 1 to include packages within each category.
+ *  @param "$basketIdent" Provide the basket identifier if a basket has been created. This allows us to show categories to the customer that other customers may be unable to see.
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function GetCategories($includePackages = 1, $basketIdent = "", $ip_address = "") {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/categories?". http_build_query(array(
@@ -42,7 +65,13 @@ function GetCategories($includePackages = 1, $basketIdent = "", $ip_address = ""
   )));
 }
 
-
+/** @brief Get a category from the webstore
+ *  @param "$category" ID of the desired category
+ *  @param "$includePackages" Set to 1 to include packages within each category.
+ *  @param "$basketIdent" Provide the basket identifier if a basket has been created. This allows us to show categories to the customer that other customers may be unable to see.
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function GetCategory($category, $includePackages = 1, $basketIdent = "", $ip_address = "") {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/categories/" . $category ."?". http_build_query(array(
@@ -52,53 +81,100 @@ function GetCategory($category, $includePackages = 1, $basketIdent = "", $ip_add
   )));
 }
 
+/** @brief Helper function to apply a code (internal use only)
+ *  @param "$basketIdent" Basket indentifier on which to apply the code
+ *  @param "$type" Type of code
+ *  @param "$data" Additional data
+ *  @return Array decoded from Tebex's API
+ */
 function Apply($basketIdent, $type, $data) {
   global $webstoreIdent;
   return Request("POST", "accounts", $webstoreIdent, "/baskets/" . $basketIdent ."/" . $type, $data);
 }
 
+/** @brief Helper function to remove a code (internal use only)
+ *  @param "$basketIdent" Basket indentifier on which to remove the code
+ *  @param "$type" Type of code
+ *  @param "$data" Additional data
+ *  @return Array decoded from Tebex's API
+ */
 function Remove($basketIdent, $type, $data) {
   global $webstoreIdent;
   return Request("POST", "accounts", $webstoreIdent, "/baskets/" . $basketIdent ."/" . $type ."/remove", $data);
 }
 
-
+/** @brief Apply a coupon on the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$coupon_code" Code to apply
+ *  @return Array decoded from Tebex's API
+ */
 function ApplyCoupon($basketIdent, $coupon_code) {
   return Apply($basketIdent, "coupons", array(
     "coupon_code" => $coupon_code,
   ));
 }
 
+/** @brief Remove a coupon from the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$coupon_code" Code to remove
+ *  @return Array decoded from Tebex's API
+ */
 function RemoveCoupon($basketIdent, $coupon_code) {
   return Remove($basketIdent, "coupons", array(
     "coupon_code" => $coupon_code,
   ));
 }
 
+/** @brief Apply a gift card on the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$card_number" Code to apply
+ *  @return Array decoded from Tebex's API
+ */
 function ApplyGiftCard($basketIdent, $card_number) {
   return Apply($basketIdent, "giftcards", array(
     "card_number" => $card_number,
   ));
 }
 
+/** @brief Remove a gift card from the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$coupon_code" Code to remove
+ *  @return Array decoded from Tebex's API
+ */
 function RemoveGiftCard($basketIdent, $card_number) {
   return Remove($basketIdent, "giftcards", array(
     "card_number" => $card_number,
   ));
 }
 
+/** @brief Apply a creator code on the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$creator_code" Code to apply
+ *  @return Array decoded from Tebex's API
+ */
 function ApplyCreatorCode($basketIdent, $creator_code) {
   return Apply($basketIdent, "creator-codes", array(
     "creator_code" => $creator_code,
   ));
 }
 
+/** @brief Remove a creator code from the given basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$creator_code" Code to remove
+ *  @return Array decoded from Tebex's API
+ */
 function RemoveCreatorCode($basketIdent, $creator_code) {
   return Remove($basketIdent, "creator-codes", array(
     "creator_code" => $creator_code,
   ));
 }
 
+/** @brief Get informations on a package
+ *  @param "$packageId" Package
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function GetPackage($packageId, $basketIdent = "", $ip_address = "") {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/packages/" . $packageId, array(
@@ -107,6 +183,11 @@ function GetPackage($packageId, $basketIdent = "", $ip_address = "") {
   ));
 }
 
+/** @brief Get informations on all packages
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function GetPackages($basketIdent = "", $ip_address = "") {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/packages", array(
@@ -115,11 +196,23 @@ function GetPackages($basketIdent = "", $ip_address = "") {
   ));
 }
 
+/** @brief Get basket data
+ *  @param "$basketIdent" Basket indentifier
+ *  @return Array decoded from Tebex's API
+ */
 function GetBasket($basketIdent) {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/baskets/" . $basketIdent);
 }
 
+/** @brief Create a basket
+ *  @param "$complete_url" URL where the client will be redirected after purchase
+ *  @param "$cancel_url" URL where the client will be redirected after cancelling
+ *  @param "$custom" Data passed to the urls
+ *  @param "$complete_auto_redirect" Redirect to the complete_url on completion
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function CreateBasket($complete_url, $cancel_url, $custom, $complete_auto_redirect, $ip_address = "") {
   global $webstoreIdent;
   return Request("POST", "accounts", $webstoreIdent, "/baskets", array(
@@ -131,6 +224,15 @@ function CreateBasket($complete_url, $cancel_url, $custom, $complete_auto_redire
   ));
 }
 
+/** @brief Create a minecraft basket
+ *  @param "$username" URL where the client will be redirected after purchase
+ *  @param "$complete_url" URL where the client will be redirected after purchase
+ *  @param "$cancel_url" URL where the client will be redirected after cancelling
+ *  @param "$custom" Data passed to the urls
+ *  @param "$complete_auto_redirect" Redirect to the complete_url on completion
+ *  @param "$ip_address" An IP address can be provided with authenticated requests
+ *  @return Array decoded from Tebex's API
+ */
 function CreateMinecraftBasket($username, $complete_url, $cancel_url, $custom, $complete_auto_redirect) {
   global $webstoreIdent;
   return Request("POST", "accounts", $webstoreIdent, "/baskets", array(
@@ -142,6 +244,11 @@ function CreateMinecraftBasket($username, $complete_url, $cancel_url, $custom, $
   ));
 }
 
+/** @brief Get the basket authentication URL
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$returnUrl" URL you would like to redirect the user to after successful basket authentication
+ *  @return Array decoded from Tebex's API
+ */
 function GetBasketAuthURL($basketIdent, $returnUrl) {
   global $webstoreIdent;
   return Request("GET", "accounts", $webstoreIdent, "/baskets/" . $basketIdent . "/auth?" . http_build_query(array(
@@ -149,6 +256,14 @@ function GetBasketAuthURL($basketIdent, $returnUrl) {
   )));
 }
 
+/** @brief Add a package to the specified basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$package_id" Package ID
+ *  @param "$quantity" Quantity
+ *  @param "$type" Type of package : single / subscription
+ *  @param "$variable_data" Data needed by package (for variable products)
+ *  @return Array decoded from Tebex's API
+ */
 function AddPackage($basketIdent, $package_id, $quantity = 1, $type = "single", $variable_data = array()) {
   return Request("POST", "baskets", $basketIdent, "/packages", array(
     "package_id" => $package_id,
@@ -158,6 +273,12 @@ function AddPackage($basketIdent, $package_id, $quantity = 1, $type = "single", 
   ));
 }
 
+/** @brief Add a package to the specified basket as a gift
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$package_id" Package ID
+ *  @param "$target_username_id" Username of the player to give the package to
+ *  @return Array decoded from Tebex's API
+ */
 function GiftPackage($basketIdent, $package_id, $target_username_id) {
   return Request("POST", "baskets", $basketIdent, "/packages", array(
     "package_id" => $package_id,
@@ -165,19 +286,35 @@ function GiftPackage($basketIdent, $package_id, $target_username_id) {
   ));
 }
 
-function RemovePackage($basketIdent, $package_id, $quantity = 1, $type = "single", $variable_data = array()) {
+/** @brief Remove a package from the specified basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$package_id" Package ID
+ *  @return Array decoded from Tebex's API
+ */
+function RemovePackage($basketIdent, $package_id) {
   return Request("POST", "baskets", $basketIdent, "/packages/remove", array(
     "package_id" => $package_id,
-    "quantity" => $quantity,
-    "type" => $type,
-    "variable_data" => $variable_data,
   ));
 }
 
+/** @brief Update the package quantity in the specified basket
+ *  @param "$basketIdent" Basket indentifier
+ *  @param "$package_id" Package ID
+ *  @param "$quantity" New quantity
+ *  @return Array decoded from Tebex's API
+ */
 function UpdateQuantity($basketIdent, $package_id, $quantity) {
   return Request("PUT", "baskets", $basketIdent, "/packages/" . $package_id, array(
     "quantity" => $quantity,
   ));
+}
+
+/** @brief Get webstore data
+ *  @return Array decoded from Tebex's API
+ */
+function GetWebstore() {
+  global $webstoreIdent;
+  return Request("GET", "baskets", $webstoreIdent, "");
 }
 
 ?>

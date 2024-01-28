@@ -1,4 +1,13 @@
 <?php
+
+$webstoreIdent = "";
+
+function SetWebstoreIdentifier($identifier) {
+  global $webstoreIdent;
+
+  $webstoreIdent = $identifier;
+}
+
 function Request($method, $route, $identifier, $path, $data = array()) {
   $baseUrl = "https://headless.tebex.io";
   $curl = curl_init();

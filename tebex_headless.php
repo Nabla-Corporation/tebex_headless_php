@@ -30,7 +30,7 @@ function Request(string $method, string $route, string $identifier, string $path
 {
   $baseUrl = "https://headless.tebex.io";
   $curl = curl_init();
-  $url = $baseUrl . "/api/" . $route . "/" . $identifier . "" . $path;
+  $url = $baseUrl . "/api/" . $route . "/" . $identifier . "/" . $path;
   curl_setopt_array(
     $curl,
     array(
@@ -67,7 +67,7 @@ function GetCategories(bool $includePackages = true, string $basketIdent = "", s
     "GET",
     "accounts",
     $webstoreIdent,
-    "/categories?" . http_build_query(
+    "categories?" . http_build_query(
       array(
         'includePackages' => $includePackages,
         'basketIdent' => $basketIdent,
@@ -91,7 +91,7 @@ function GetCategory(int $category, bool $includePackages = true, string $basket
     "GET",
     "accounts",
     $webstoreIdent,
-    "/categories/" . $category . "?" . http_build_query(
+    "categories/" . $category . "?" . http_build_query(
       array(
         'includePackages' => $includePackages,
         'basketIdent' => $basketIdent,
@@ -110,7 +110,13 @@ function GetCategory(int $category, bool $includePackages = true, string $basket
 function Apply(string $basketIdent, string $type, array $data)
 {
   global $webstoreIdent;
-  return Request("POST", "accounts", $webstoreIdent, "/baskets/" . $basketIdent . "/" . $type, $data);
+  return Request(
+    "POST",
+    "accounts",
+    $webstoreIdent,
+    "baskets/" . $basketIdent . "/" . $type,
+    $data
+  );
 }
 
 /** @brief Helper function to remove a code (internal use only)
@@ -122,7 +128,13 @@ function Apply(string $basketIdent, string $type, array $data)
 function Remove(string $basketIdent, $type, array $data)
 {
   global $webstoreIdent;
-  return Request("POST", "accounts", $webstoreIdent, "/baskets/" . $basketIdent . "/" . $type . "/remove", $data);
+  return Request(
+    "POST",
+    "accounts",
+    $webstoreIdent,
+    "baskets/" . $basketIdent . "/" . $type . "/remove",
+    $data
+  );
 }
 
 /** @brief Apply a coupon on the given basket
@@ -234,7 +246,7 @@ function GetPackage(string $packageId, string $basketIdent = "", string $ip_addr
     "GET",
     "accounts",
     $webstoreIdent,
-    "/packages/" . $packageId,
+    "packages/" . $packageId,
     array(
       'basketIdent' => $basketIdent,
       "ip_address" => $ip_address,
@@ -254,7 +266,7 @@ function GetPackages(string $basketIdent = "", string $ip_address = "")
     "GET",
     "accounts",
     $webstoreIdent,
-    "/packages",
+    "packages",
     array(
       'basketIdent' => $basketIdent,
       "ip_address" => $ip_address,
@@ -269,7 +281,12 @@ function GetPackages(string $basketIdent = "", string $ip_address = "")
 function GetBasket(string $basketIdent)
 {
   global $webstoreIdent;
-  return Request("GET", "accounts", $webstoreIdent, "/baskets/" . $basketIdent);
+  return Request(
+    "GET",
+    "accounts",
+    $webstoreIdent,
+    "baskets/" . $basketIdent
+  );
 }
 
 /** @brief Create a basket
@@ -287,7 +304,7 @@ function CreateBasket(string $complete_url, $cancel_url, array $custom, bool $co
     "POST",
     "accounts",
     $webstoreIdent,
-    "/baskets",
+    "baskets",
     array(
       "ip_address" => $ip_address,
       "complete_url" => $complete_url,
@@ -314,7 +331,7 @@ function CreateMinecraftBasket(string $username, string $complete_url, string $c
     "POST",
     "accounts",
     $webstoreIdent,
-    "/baskets",
+    "baskets",
     array(
       "username" => $username,
       "complete_url" => $complete_url,
@@ -337,7 +354,7 @@ function GetBasketAuthURL(string $basketIdent, string $returnUrl)
     "GET",
     "accounts",
     $webstoreIdent,
-    "/baskets/" . $basketIdent . "/auth?" . http_build_query(
+    "baskets/" . $basketIdent . "/auth?" . http_build_query(
       array(
         "returnUrl" => $returnUrl,
       )
@@ -359,7 +376,7 @@ function AddPackage(string $basketIdent, string $package_id, int $quantity = 1, 
     "POST",
     "baskets",
     $basketIdent,
-    "/packages",
+    "packages",
     array(
       "package_id" => $package_id,
       "quantity" => $quantity,
@@ -381,7 +398,7 @@ function GiftPackage(string $basketIdent, string $package_id, string $target_use
     "POST",
     "baskets",
     $basketIdent,
-    "/packages",
+    "packages",
     array(
       "package_id" => $package_id,
       "target_username_id" => $target_username_id,
@@ -400,7 +417,7 @@ function RemovePackage(string $basketIdent, string $package_id)
     "POST",
     "baskets",
     $basketIdent,
-    "/packages/remove",
+    "packages/remove",
     array(
       "package_id" => $package_id,
     )
@@ -419,7 +436,7 @@ function UpdateQuantity(string $basketIdent, string $package_id, string $quantit
     "PUT",
     "baskets",
     $basketIdent,
-    "/packages/" . $package_id,
+    "packages/" . $package_id,
     array(
       "quantity" => $quantity,
     )
@@ -432,5 +449,10 @@ function UpdateQuantity(string $basketIdent, string $package_id, string $quantit
 function GetWebstore()
 {
   global $webstoreIdent;
-  return Request("GET", "baskets", $webstoreIdent, "");
+  return Request(
+    "GET",
+    "baskets",
+    $webstoreIdent,
+    ""
+  );
 }

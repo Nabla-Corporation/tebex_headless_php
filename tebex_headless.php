@@ -51,7 +51,8 @@ function Request(string $method, string $route, string $identifier, string $path
     )
   );
 
-  $response = json_decode(curl_exec($curl), true);
+  $json = curl_exec($curl);
+  $response = json_decode($json, true);
   curl_close($curl);
   return $response;
 }

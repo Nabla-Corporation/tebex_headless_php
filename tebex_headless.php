@@ -5,6 +5,8 @@
  *  @author Blaise Lebreton
  */
 
+
+/** Global webstore indentifier */
 $webstoreIdent = "";
 
 /** @brief Sets the webstore identifer
@@ -187,7 +189,7 @@ function ApplyGiftCard(string $basketIdent, string $card_number)
 
 /** @brief Remove a gift card from the given basket
  *  @param "$basketIdent" Basket indentifier
- *  @param "$coupon_code" Code to remove
+ *  @param "$card_number" Code to remove
  *  @return array decoded from Tebex's API
  */
 function RemoveGiftCard(string $basketIdent, string $card_number)
@@ -321,7 +323,6 @@ function CreateBasket(string $complete_url, $cancel_url, array $custom, bool $co
  *  @param "$cancel_url" URL where the client will be redirected after cancelling
  *  @param "$custom" Data passed to the urls
  *  @param "$complete_auto_redirect" Redirect to the complete_url on completion
- *  @param "$ip_address" An IP address can be provided with authenticated requests
  *  @return array decoded from Tebex's API
  */
 function CreateMinecraftBasket(string $username, string $complete_url, string $cancel_url, array $custom, bool $complete_auto_redirect)

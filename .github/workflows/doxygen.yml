@@ -22,10 +22,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Build with doxygen
+      - name: Install doxygen
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen graphviz
+      - name: Build with doxygen
+        run: |
           doxygen
           rm ./_site -rf
           mv html ./_site

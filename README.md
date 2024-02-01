@@ -18,7 +18,7 @@ SetWebstoreIdentifier("your_public_token")
 
 ## Documentation
 
-The documentation is available [here](https://nabla-corporation.github.io/tebex_headless_php)
+The documentation is available [here](https://nabla-corporation.github.io/tebex_headless_php/tebex__headless_8php.html)
 
 ## Features
 

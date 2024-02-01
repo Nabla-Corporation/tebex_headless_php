@@ -61,6 +61,5 @@ If you have questions or need assistance, feel free to [open an issue](https://g
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-Happy coding! 🚀
+## Credits
+Credits goes to [grp-gg](https://github.com/grp-gg/tebex_headless) for the original typescript library and the template for this README.
